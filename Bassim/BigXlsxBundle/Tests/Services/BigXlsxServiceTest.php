@@ -1,18 +1,30 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Bassim\BigXlsxBundle\Tests\Services;
 
 use Bassim\BigXlsxBundle\Services\BenchmarkService;
 use Bassim\BigXlsxBundle\Services\BigXlsxService;
+use PhpOffice\PhpSpreadsheet\Exception as SpreadsheetException;
+use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
+use PHPUnit_Framework_TestCase;
 
-class BigXlsxServiceTest extends \PHPUnit_Framework_TestCase
+class BigXlsxServiceTest extends PHPUnit_Framework_TestCase
 {
 
     private $rowCount = 100;
 
-    public function testService()
+    /**
+     * @throws SpreadsheetException
+     * @throws WriterException
+     * @throws ReaderException
+     */
+    public function testService(): void
     {
-
-        /** @var $service BigXlsxService */
+        $data = [];
         $service = new BigXlsxService(); //get('bassim_big_xlsx.service');
 
         $data[] = array("id", "name");
@@ -29,16 +41,22 @@ class BigXlsxServiceTest extends \PHPUnit_Framework_TestCase
         $service->addSheet(1, "test Sheet_1", $data);
         $file = $service->getFile();
 
-        $reader = new \PHPExcel_Reader_Excel2007();
+        $reader = new Xlsx();
         $reader->load($file);
-        $this->assertEquals(2, count($reader->listWorksheetNames($file)));
+        $worksheetNames = $reader->listWorksheetNames($file);
+        static::assertCount(2, $worksheetNames);
 
 
     }
 
-    public function testServiceAddCustomSheet()
+    /**
+     * @throws SpreadsheetException
+     * @throws WriterException
+     * @throws ReaderException
+     */
+    public function testServiceAddCustomSheet(): void
     {
-        /** @var $service BigXlsxService */
+        $data = [];
         $service = new BigXlsxService(); //get('bassim_big_xlsx.service');
 
         $data[] = array("id", "name");
@@ -64,17 +82,22 @@ class BigXlsxServiceTest extends \PHPUnit_Framework_TestCase
 
         $file = $service->getFile();
 
-        $objPHPExcel2 = new \PHPExcel_Reader_Excel2007();
+        $objPHPExcel2 = new Xlsx();
         $objPHPExcel2->load($file);
 
-        $this->assertEquals(3, count($objPHPExcel2->listWorksheetNames($file)));
+        $worksheetNames = $objPHPExcel2->listWorksheetNames($file);
+        static::assertCount(3, $worksheetNames);
 
     }
 
 
-    public function testBenchmarkService()
+    /**
+     * @throws SpreadsheetException
+     * @throws WriterException
+     * @throws ReaderException
+     */
+    public function testBenchmarkService(): void
     {
-        /** @var $service BenchmarkService */
         $service = new BenchmarkService(); //->get('bassim_big_xlsx.benchmark.service');
         $service->create();
 
@@ -92,8 +115,10 @@ class BigXlsxServiceTest extends \PHPUnit_Framework_TestCase
         $service->addSheet(1, "test Sheet_1", array("id2", "name2"), $data);
         $file = $service->get();
 
-        $reader = new \PHPExcel_Reader_Excel2007();
+        $reader = new Xlsx();
         $reader->load($file);
-        $this->assertEquals(2, count($reader->listWorksheetNames($file)));
+        $worksheetNames = $reader->listWorksheetNames($file);
+        unlink($file);
+        static::assertCount(2, $worksheetNames);
     }
 }

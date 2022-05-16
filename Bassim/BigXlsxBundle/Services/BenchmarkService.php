@@ -1,28 +1,44 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Bassim\BigXlsxBundle\Services;
+
+use PhpOffice\PhpSpreadsheet\Exception as SpreadsheetException;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class BenchmarkService
 {
 
-    /** @var $objPHPExcel \PHPExcel */
+    /** @var $objPHPExcel Spreadsheet */
     private $objPHPExcel;
     private $columnName;
-    private $sheets = array();
+    private $sheets = [];
 
     public function __construct()
     {
     }
 
 
-    public function create()
+    public function create(): void
     {
         $this->columnName = null;
 
-        $this->objPHPExcel = new \PHPExcel();
+        $this->objPHPExcel = new Spreadsheet();
 
     }
 
-    public function addSheet($sheetNumber, $name, $columns, $data)
+    /**
+     * @param int $sheetNumber
+     * @param string $name
+     * @param iterable $columns
+     * @param iterable $data
+     * @return void
+     * @throws SpreadsheetException
+     */
+    public function addSheet(int $sheetNumber, string $name, iterable $columns, iterable $data): void
     {
         if ($sheetNumber > 0) {
             $this->objPHPExcel->createSheet($sheetNumber);
@@ -57,17 +73,26 @@ class BenchmarkService
         }
     }
 
-    public function get()
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function get(): string
     {
         // Save Excel 2007 file
-        $objWriter = new \PHPExcel_Writer_Excel2007($this->objPHPExcel);
-        $date = new \DateTime();
-        $date = $date->format("Y-m-d_h-i");
-        $filename = "/tmp/report_export_" . $date . ".xlsx";
-
+        $objWriter = new Xlsx($this->objPHPExcel);
+        $filename = tempnam(sys_get_temp_dir(), 'BCH');
 
         $objWriter->save($filename);
 
         return $filename;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSheets(): array
+    {
+        return $this->sheets;
     }
 }

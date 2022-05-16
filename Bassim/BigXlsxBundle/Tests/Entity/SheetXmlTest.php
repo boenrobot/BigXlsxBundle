@@ -1,13 +1,17 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Bassim\BigXlsxBundle\Tests\Entity;
 
 use Bassim\BigXlsxBundle\Entity\SharedStringXml;
 use Bassim\BigXlsxBundle\Entity\SheetXml;
+use PHPUnit_Framework_TestCase;
 
-class SheetXmlTest extends \PHPUnit_Framework_TestCase
+class SheetXmlTest extends PHPUnit_Framework_TestCase
 {
 
-    public function testWrite()
+    public function testWrite(): void
     {
         $data = array(
             array("1", "2", "3")
@@ -19,8 +23,8 @@ class SheetXmlTest extends \PHPUnit_Framework_TestCase
 
 
         $file = $sheetXml->getFile();
-        $xml = simplexml_load_file($file);
+        $xml = simplexml_load_string(file_get_contents($file));
 
-        $this->assertEquals(0, (string)$xml->sheetData->row[0]->c[0]->v);
+        static::assertEquals(0, (string)$xml->sheetData->row[0]->c[0]->v);
     }
 }

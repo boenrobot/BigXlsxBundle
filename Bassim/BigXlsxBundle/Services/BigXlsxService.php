@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Bassim\BigXlsxBundle\Services;
 
 /**
@@ -30,15 +32,20 @@ namespace Bassim\BigXlsxBundle\Services;
 
 use Bassim\BigXlsxBundle\Entity\SharedStringXml;
 use Bassim\BigXlsxBundle\Entity\SheetXml;
+use PhpOffice\PhpSpreadsheet\Exception as SpreadsheetException;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as WriterException;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use ZipArchive;
 
 class BigXlsxService
 {
 
-    /** @var $objPHPExcel \PHPExcel */
+    /** @var $objPHPExcel Spreadsheet */
     private $objPHPExcel;
 
     /**
-     * @var array
+     * @var array<int,iterable>
      */
     private $sheets = array();
 
@@ -49,7 +56,7 @@ class BigXlsxService
      */
     public function __construct()
     {
-        $this->objPHPExcel = new \PHPExcel();
+        $this->objPHPExcel = new Spreadsheet();
     }
 
     /**
@@ -57,11 +64,12 @@ class BigXlsxService
      *
      * @param int $sheetNumber The SheetNumber
      * @param string $sheetName The SheetName
-     * @param array $sheetData The SheetData
+     * @param iterable $sheetData The SheetData
      *
      * @return void
+     * @throws SpreadsheetException
      */
-    public function addSheet($sheetNumber, $sheetName, $sheetData)
+    public function addSheet(int $sheetNumber, string $sheetName, iterable $sheetData): void
     {
         if ($sheetNumber > 0) {
             $this->objPHPExcel->createSheet($sheetNumber);
@@ -79,19 +87,20 @@ class BigXlsxService
      * @param null|string $filePath The optional Custom FilePath
      *
      * @return string
+     * @throws WriterException
      */
-    public function getFile($filePath = null)
+    public function getFile(?string $filePath = null): string
     {
         // Save Excel 2007 file
-        $objWriter = new \PHPExcel_Writer_Excel2007($this->objPHPExcel);
+        $objWriter = new Xlsx($this->objPHPExcel);
 
-        if (is_null($filePath)) {
-            $filePath = realpath(sys_get_temp_dir()) . "/" . uniqid("xlsx") . ".xlsx";
+        if ($filePath === null) {
+            $filePath = tempnam(sys_get_temp_dir(), 'BXS');
         }
 
         $objWriter->save($filePath);
 
-        $zipArchive = new \ZipArchive();
+        $zipArchive = new ZipArchive();
         $zipArchive->open($filePath);
 
         $sharedStringXml = new SharedStringXml();
@@ -111,9 +120,9 @@ class BigXlsxService
     /**
      * Returns the PHPExcel instance
      *
-     * @return \PHPExcel
+     * @return Spreadsheet
      */
-    public function getPHPExcel()
+    public function getPHPExcel(): Spreadsheet
     {
         return $this->objPHPExcel;
     }

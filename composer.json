@@ -1,22 +1,28 @@
 {
-    "name": "bassim/big-xlsx-bundle",
+    "name": "boenrobot/big-xlsx-bundle",
     "type": "symfony-bundle",
-    "description": "Symfony2 Bundle for generating large multi-sheeted xlsx files with low memory usage",
+    "description": "Symfony2 Bundle for generating large multi-sheeted xlsx files with low memory usage. Fork of bassim/BigXlsxBundle, for compatibility with newer PHP versions.",
     "keywords": ["php", "xlsx",  "excel", "spreadsheet", "csv"],
-    "homepage": "http://github.com/Bassim/BigXlsxBundle",
+    "homepage": "http://github.com/boenrobot/BigXlsxBundle",
     "license": "MIT",
     "authors": [
         {
             "name": "Bas Simons",
             "email": "bassim@xs4all.nl"
+        },
+        {
+            "name": "Vasil Rangelov",
+            "email": "boen.robot@gmail.com"
         }
     ],
     "require": {
-        "php": ">=5.3.3",
-        "phpoffice/phpexcel": ">=1.8.0"
+        "phpoffice/phpspreadsheet": "^1.12",
+        "ext-zip": "*"
     },
     "require-dev": {
-        "symfony/symfony": "2.3.*"
+        "ext-simplexml": "*",
+        "symfony/symfony": "2.3.*",
+        "phpunit/phpunit": "^5"
     },
     "autoload": {
         "psr-0": { "Bassim\\BigXlsxBundle": "" }
