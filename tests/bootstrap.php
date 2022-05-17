@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types=1);
+namespace Bassim\BigXlsxBundle\Tests;
 
-$file = __DIR__.'/../../../vendor/autoload.php';
+use RuntimeException;
+
+$file = __DIR__ . '/../vendor/autoload.php';
 if (!file_exists($file)) {
     throw new RuntimeException('Install dependencies to run test suite. "php composer.phar install --dev"');
 }
-
 require_once $file;

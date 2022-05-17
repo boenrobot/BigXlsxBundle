@@ -24,9 +24,15 @@
         "symfony/symfony": "2.3.*",
         "phpunit/phpunit": "^5"
     },
+    "conflict": {
+        "bassim/big-xlsx-bundle": "*"
+    },
     "autoload": {
-        "psr-0": { "Bassim\\BigXlsxBundle": "" }
+        "psr-4": {
+            "Bassim\\BigXlsxBundle\\Tests\\": "tests",
+            "Bassim\\BigXlsxBundle\\": "src"
+        }
     },
     "minimum-stability": "dev",
-    "target-dir": ""
+    "prefer-stable": true
 }

@@ -20,7 +20,7 @@ class SheetXml
 
     public function __construct(SharedStringXml $sharedStringXml)
     {
-        $this->sheetFile = realpath(sys_get_temp_dir()) . "/" . uniqid("sheetXml", true);
+        $this->sheetFile = tempnam(sys_get_temp_dir(), 'psx');
         $this->filePointer = fopen($this->sheetFile, 'wb');
         $this->sharedStringXml = $sharedStringXml;
     }
@@ -63,12 +63,12 @@ class SheetXml
 
         $context = stream_context_create();
         $filePointer = fopen($this->sheetFile, 'rb', true, $context);
-        $tmpName = md5($string);
-        file_put_contents(realpath(sys_get_temp_dir()) . "/" . $tmpName, $string);
-        file_put_contents(realpath(sys_get_temp_dir()) . "/" . $tmpName, $filePointer, FILE_APPEND);
+        $tmpName = tempnam(sys_get_temp_dir(), 'tst');
+        file_put_contents($tmpName, $string);
+        file_put_contents($tmpName, $filePointer, FILE_APPEND);
         fclose($filePointer);
         unlink($this->sheetFile);
-        rename(realpath(sys_get_temp_dir()) . "/" . $tmpName, $this->sheetFile);
+        rename($tmpName, $this->sheetFile);
 
     }
 
